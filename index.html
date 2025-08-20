@@ -37,6 +37,7 @@
       font-weight: bold;
       margin-bottom: 10px;
       color: #007acc;
+      word-wrap: break-word;
     }
     .project-link {
       display: inline-block;
@@ -59,27 +60,35 @@
   <div class="projects-container" id="projects"></div>
 
   <script>
-    // List of projects (You can add more HTML files here)
-    const projects = [
-      { title: "Business Calculator", link: "projectsAll/BusCal.html" },
-      { title: "Simple Calculator", link: "projectsAll/simplecal.html" },
-      { title: "Calculator", link: "projectsAll/calculator.html" },
-      { title: "Weather App", link: "projectsAll/weather.html" },
-    ];
+    /**
+     * GitHub Pages does not allow direct folder listing.
+     * Solution: Create a JSON file in projectsAll/ (e.g., projects.json)
+     * listing all your HTML files. Example projectsAll/projects.json:
+     * ["portfolio.html", "todo.html", "calculator.html", "weather.html"]
+     */
 
-    const container = document.getElementById("projects");
+    fetch("projectsAll/projects.json")
+      .then(response => response.json())
+      .then(files => {
+        const container = document.getElementById("projects");
 
-    projects.forEach(project => {
-      const card = document.createElement("div");
-      card.className = "project-card";
+        files.forEach(file => {
+          const title = file.replace(".html", "").replace(/[-_]/g, " ");
 
-      card.innerHTML = `
-        <div class="project-title">${project.title}</div>
-        <a href="${project.link}" class="project-link" target="_blank">View Project</a>
-      `;
+          const card = document.createElement("div");
+          card.className = "project-card";
 
-      container.appendChild(card);
-    });
+          card.innerHTML = `
+            <div class="project-title">${title}</div>
+            <a href="projectsAll/${file}" class="project-link" target="_blank">View Project</a>
+          `;
+
+          container.appendChild(card);
+        });
+      })
+      .catch(err => {
+        console.error("Error loading projects list:", err);
+      });
   </script>
 </body>
 </html>
