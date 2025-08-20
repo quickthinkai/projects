@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #808080;
+        }
+        .calculator {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            width: 320px;
+        }
+        .display {
+            width: 100%;
+            height: 60px;
+            background-color: #2d2d2d;
+            color: white;
+            text-align: right;
+            padding: 10px 20px;
+            font-size: 2em;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        button {
+            padding: 20px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #555555;
+            color: white;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #666666;
+        }
+        .operator {
+            background-color: #007bff;
+        }
+        .operator:hover {
+            background-color: #0056b3;
+        }
+        .clear {
+            background-color: #6f42c1;
+        }
+        .clear:hover {
+            background-color: #5a32a3;
+        }
+        .equal {
+            background-color: #20c997;
+        }
+        .equal:hover {
+            background-color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button onclick="chooseOperator('/')" class="operator">&divide;</button>
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button onclick="chooseOperator('*')" class="operator">&times;</button>
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button onclick="chooseOperator('-')" class="operator">-</button>
+            <button onclick="appendNumber('0')">0</button>
+            <button onclick="appendNumber('.')">.</button>
+            <button onclick="clearDisplay()" class="clear">C</button>
+            <button onclick="chooseOperator('+')" class="operator">+</button>
+            <button onclick="calculateResult()" class="equal" style="grid-column: span 4;">=</button>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+        let currentInput = '0';
+        let operator = null;
+        let previousInput = '';
+        let isResultDisplayed = false;
+
+        function appendNumber(number) {
+            if (isResultDisplayed) {
+                currentInput = '';
+                isResultDisplayed = false;
+            }
+            if (currentInput === '0' && number !== '.') {
+                currentInput = number;
+            } else if (number === '.' && currentInput.includes('.')) {
+                return;
+            } else {
+                currentInput += number;
+            }
+            updateDisplay(currentInput);
+        }
+
+        function chooseOperator(op) {
+            if (currentInput === '' && previousInput === '') return;
+
+            if (currentInput !== '' && previousInput !== '') {
+                calculateResult();
+            }
+
+            operator = op;
+            if (currentInput !== '') {
+                previousInput = currentInput;
+            }
+            currentInput = '';
+            updateDisplay(previousInput + ' ' + op);
+            isResultDisplayed = false;
+        }
+
+        function calculateResult() {
+            if (previousInput === '' || operator === null || currentInput === '') return;
+            let result;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+
+            if (isNaN(prev) || isNaN(current)) return;
+
+            switch (operator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    if (current === 0) {
+                        result = 'Error';
+                    } else {
+                        result = prev / current;
+                    }
+                    break;
+                default:
+                    return;
+            }
+            currentInput = result.toString();
+            operator = null;
+            previousInput = '';
+            updateDisplay(currentInput);
+            isResultDisplayed = true;
+        }
+
+        function clearDisplay() {
+            currentInput = '0';
+            operator = null;
+            previousInput = '';
+            isResultDisplayed = false;
+            updateDisplay(currentInput);
+        }
+
+        function updateDisplay(value) {
+            display.innerText = value;
+        }
+
+        clearDisplay();
+    </script>
+
+</body>
+</html>
